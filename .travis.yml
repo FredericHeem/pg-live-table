@@ -1,0 +1,10 @@
+sudo: false
+language: node_js
+node_js:
+  - '0.12'
+
+services:
+  - rabbitmq
+
+after_script:
+  - npm run codeclimate && npm run coveralls

@@ -1,0 +1,58 @@
+{
+  "name": "pg-live-table",
+  "version": "0.2.0",
+  "description": "Real time monitoring of Postgres database table",
+  "homepage": "https://github.com/FredericHeem/pg-live-table",
+  "author": {
+    "name": "Frederic Heem",
+    "email": "frederic.heem@gmail.com",
+    "url": "https://github.com/FredericHeem"
+  },
+  "repository": "https://github.com/FredericHeem/pg-live-table.git",
+  "license": "MIT",
+  "main": "build/index.js",
+  "keywords": [
+    "pg-live-table",
+    "rabbitmq publisher subscriber amqp ampqlib"
+  ],
+  "dependencies": {
+    "bluebird": "^2.9.25",
+    "lodash": "^3.8.0",
+    "logfilename": "0.1.3",
+    "run-sequence": "^1.1.4"
+  },
+  "devDependencies": {
+    "babel": "^5.8.23",
+    "babel-core": "^5.8.24",
+    "babel-eslint": "^4.1.3",
+    "babel-loader": "^5.3.2",
+    "babel-runtime": "^5.8.24",
+    "codeclimate-test-reporter": "^0.1.1",
+    "coveralls": "^2.11.4",
+    "debug": "^2.2.0",
+    "eslint": "^1.5.1",
+    "gulp": "3.9.0",
+    "gulp-babel": "^5.2.1",
+    "gulp-clean": "0.3.1",
+    "gulp-connect": "2.2.0",
+    "gulp-mocha": "2.1.3",
+    "gulp-nodemon": "^2.0.4",
+    "gulp-util": "3.0.6",
+    "isparta": "^3.1.0",
+    "istanbul": "~0.3.6",
+    "mocha": "^2.2.4",
+    "mochawait": "^2.0.1",
+    "should": "^7.1.0"
+  },
+  "scripts": {
+    "build": "./node_modules/.bin/gulp build",
+    "prebuild": "npm run lint",
+    "postInstall": "./node_modules/.bin/gulp build:production",
+    "lint": "./node_modules/.bin/eslint src",
+    "pretest": "npm run build",
+    "test": "./node_modules/.bin/babel-node ./node_modules/.bin/isparta cover ./node_modules/.bin/_mocha test/*.js",
+    "coveralls": "./node_modules/.bin/coveralls < coverage/lcov.info",
+    "codeclimate": "./node_modules/.bin/codeclimate-test-reporter < coverage/lcov.info",
+    "prepublish": "npm run build"
+  }
+}
