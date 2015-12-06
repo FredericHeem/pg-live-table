@@ -19,6 +19,7 @@
     "bluebird": "^2.9.25",
     "lodash": "^3.8.0",
     "logfilename": "0.1.3",
+    "pg": "4.4.3",
     "run-sequence": "^1.1.4"
   },
   "devDependencies": {
@@ -50,6 +51,7 @@
     "postInstall": "./node_modules/.bin/gulp build:production",
     "lint": "./node_modules/.bin/eslint src",
     "pretest": "npm run build",
+    "mocha": "npm run pretest && mocha test/*.js",
     "test": "./node_modules/.bin/babel-node ./node_modules/.bin/isparta cover ./node_modules/.bin/_mocha test/*.js",
     "coveralls": "./node_modules/.bin/coveralls < coverage/lcov.info",
     "codeclimate": "./node_modules/.bin/codeclimate-test-reporter < coverage/lcov.info",

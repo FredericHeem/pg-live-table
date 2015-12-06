@@ -21,19 +21,15 @@ $ npm install --save pg-live-table
 ```js
 import PgLiveTable from 'pg-live-table';
 
-let dbUrl = '';
-let pgLiveTable = PgLiveTable(dbUrl);
+let dbUrl = 'postgres://username:password@localhost/database';
+let LiveTable = PgLiveTable({dbUrl: dbUrl);
 
-let table = pgLiveTable.monitor('transactions')
-.onUpdate((oldRow, newRow) => {
-  console.log(`update: ${oldRow}, ${newRow}`);
+let liveTable = LiveTable(options);
+let ee = await liveTable.monitor('mytable');
+ee.on('insert', (newRow) => {
+  console.log(`got insert`);
 });
-.onNew((newRow) => {
-  console.log(`new: ${oldRow}`);
-});
-.onDelete((deletedRow) => {
-  console.log(`deleted: ${deletedRow}`);
-});
+await liveTable.listen();
 
 ```
 
