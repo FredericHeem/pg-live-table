@@ -42,6 +42,11 @@ export default function LiveTable(options = {}) {
         async version() {
             log.debug(`version`);
             return query("select version()");
+        },
+        async close(){
+            log.debug("close");
+            let client = await getClient();
+            client.end();
         }
     };
 
