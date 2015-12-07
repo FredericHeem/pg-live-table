@@ -22,11 +22,16 @@ $ npm install --save pg-live-table
 import PgLiveTable from 'pg-live-table';
 
 let dbUrl = 'postgres://username:password@localhost/database';
-let LiveTable = PgLiveTable({dbUrl: dbUrl);
+let liveTable = PgLiveTable({dbUrl: dbUrl);
 
-let liveTable = LiveTable(options);
 let ee = await liveTable.monitor('mytable');
 ee.on('insert', (newRow) => {
+  console.log(`got insert`);
+});
+ee.on('new', (newRow) => {
+  console.log(`got insert`);
+});
+ee.on('update', (newRow) => {
   console.log(`got insert`);
 });
 await liveTable.listen();

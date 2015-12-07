@@ -50,17 +50,35 @@ describe('LiveTable', function() {
         assert(false);
       }
     });
-    it('monitor one table', async(done) => {
+    it('monitor new row', async(done) => {
       try {
         let liveTable = LiveTable(options);
         let ee = await liveTable.monitor(tableName);
-        ee.on('insert', (newRow) => {
-          console.log(`GOT insert`);
-          assert(newRow);
+        ee.on('insert', (payload) => {
+          console.log(`GOT insert: data: ${payload.data}`);
+          assert(payload);
+          assert(payload.data);
           done();
         });
         await liveTable.listen();
         await knex(tableName).insert({ledgerseq: '1'});
+      } catch(error){
+        console.log(`error ${error}`);
+        assert(false);
+      }
+    });
+    it('monitor update', async(done) => {
+      try {
+        let liveTable = LiveTable(options);
+        let ee = await liveTable.monitor(tableName);
+        ee.on('update', (data) => {
+          console.log(`GOT data: ${data}`);
+          assert(data.new_data);
+          assert(data.old_data);
+          done();
+        });
+        await liveTable.listen();
+        await knex(tableName).update({ledgerseq: '2'}).where({id:1});
       } catch(error){
         console.log(`error ${error}`);
         assert(false);

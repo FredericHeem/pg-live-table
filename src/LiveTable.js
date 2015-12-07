@@ -60,7 +60,7 @@ export default function LiveTable(options = {}) {
                 log.debug(`notification payload: ${JSON.stringify(payload, null, 4)}`);
                 let table = tableMap.get(payload.table);
                 if(table){
-                    table.ee.emit(convertOp(payload.op), payload.data);
+                    table.ee.emit(convertOp(payload.op), payload);
                 } else {
                     log.error(`table not registered: ${payload.table}`);
                 }

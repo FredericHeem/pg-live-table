@@ -6,7 +6,7 @@ module.exports = {
     client: 'postgresql',
     connection: {
       database: 'livetable_test',
-      user:     'livetable',
+      user:     'postgres',
       password: 'password'
     },
     pool: {
