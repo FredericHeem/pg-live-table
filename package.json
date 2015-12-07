@@ -13,7 +13,11 @@
   "main": "build/index.js",
   "keywords": [
     "pg-live-table",
-    "rabbitmq publisher subscriber amqp ampqlib"
+    "postgres",
+    "postgresql",
+    "real time",
+    "reactive",
+    "monitoring"
   ],
   "dependencies": {
     "bluebird": "^2.9.25",

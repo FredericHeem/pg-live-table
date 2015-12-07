@@ -81,8 +81,8 @@ describe('LiveTable', function() {
           assert(payload);
           assert(payload.data);
           //TODO use spy
-        });
-        ee.on('update', (payload) => {
+        })
+        .on('update', (payload) => {
           let {old_data, new_data} = payload;
           console.log(`GOT update: old: ${old_data}, new: ${new_data}`);
           assert(payload);
@@ -90,12 +90,19 @@ describe('LiveTable', function() {
           assert.equal(new_data[0].ledgerseq, 2);
           assert(old_data);
           assert.equal(old_data[0].ledgerseq, 1);
-
+        })
+        .on('delete', (payload) => {
+          let {data} = payload;
+          console.log(`GOT delete: data: ${data}`);
+          assert(payload);
+          assert(data);
+          assert.equal(data[0].id, 1);
           done();
         });
         await liveTable.listen();
         await knex(tableName).insert({ledgerseq: '1'});
         await knex(tableName).update({ledgerseq: '2'}).where({id:1});
+        await knex(tableName).where({id:1}).del();
 
       } catch(error){
         console.log(`error ${error}`);

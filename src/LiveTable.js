@@ -55,12 +55,7 @@ export default function LiveTable(options = {}) {
     };
 
     function convertOp(op){
-        switch(op){
-            case 'INSERT': return 'insert';
-            case 'NEW': return 'new';
-            case 'UPDATE': return 'update';
-            default:
-        }
+        return op.toLowerCase();
     }
     function onNotification(info){
         if (info.channel === channel) {
