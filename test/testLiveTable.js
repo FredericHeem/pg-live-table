@@ -44,7 +44,7 @@ describe('LiveTable', function() {
         let liveTable = LiveTable(options);
         let version = await liveTable.version();
         assert(version);
-        console.log(`version ${version}`);
+        console.log(`version ${JSON.stringify(version)}`);
       } catch(error){
         console.log(`error ${error}`);
         assert(false);
