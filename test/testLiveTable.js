@@ -5,6 +5,7 @@ var LiveTable = require('../src/');
 
 describe('LiveTable', function() {
   this.timeout(30e3);
+  let dbUrl = 'postgres://localhost/livetable_test';
   let log = require('logfilename')(__filename, {
     console: {
       level: 'debug'
@@ -13,9 +14,20 @@ describe('LiveTable', function() {
 
   log.debug('');
 
+  let knex = require('knex')({
+    debug: true,
+    client: 'pg',
+    connection: dbUrl,
+    searchPath: 'public'
+  });
+
+  before(async () => {
+      await knex.migrate.latest();
+  });
+
   describe('db connection', function() {
     let options = {
-      dbUrl: 'postgres://localhost/stellar'
+      dbUrl: dbUrl
     };
     it('connect', async() => {
       let liveTable = LiveTable(options);
@@ -25,7 +37,7 @@ describe('LiveTable', function() {
   describe('db connection', function() {
     let tableName = 'ledgerheaders';
     let options = {
-      dbUrl: 'postgres://localhost/stellar'
+      dbUrl: dbUrl
     };
     it('get postgres version', async() => {
       try {
@@ -48,6 +60,7 @@ describe('LiveTable', function() {
           done();
         });
         await liveTable.listen();
+        await knex(tableName).insert({ledgerseq: '1'});
       } catch(error){
         console.log(`error ${error}`);
         assert(false);

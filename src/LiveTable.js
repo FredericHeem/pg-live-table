@@ -22,6 +22,7 @@ export default function LiveTable(options = {}) {
     let tableMap = new Map();
 
     return {
+        query,
         connect,
         async listen() {
             log.debug(`LISTEN "${channel}"`);
