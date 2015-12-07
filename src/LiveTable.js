@@ -25,13 +25,14 @@ export default function LiveTable(options = {}) {
         query,
         connect,
         async listen() {
-            log.debug(`LISTEN "${channel}"`);
             await query(`LISTEN "${channel}"`);
             let client = await getClient();
             client.on('notification', onNotification);
         },
         async monitor(tableName) {
-            //TODO check for duplicate
+            if(tableMap.has(tableName)){
+                throw Error(`table ${tableName} already exist`);
+            }
             let table = Table(tableName);
             tableMap.set(tableName, table);
 
@@ -45,6 +46,9 @@ export default function LiveTable(options = {}) {
         },
         async close(){
             log.debug("close");
+            for(let table of tableMap.values()) {
+                table.ee.removeAllListeners();
+            };
             let client = await getClient();
             client.end();
         }

@@ -55,6 +55,14 @@ describe('LiveTable', function() {
     afterEach(async () => {
       await liveTable.close();
     });
+    it('monitor the same table twice', async() => {
+      try {
+        await liveTable.monitor(tableName);
+        await liveTable.monitor(tableName);
+      } catch(error){
+        assert.equal(error.message,`table ${tableName} already exist`);
+      }
+    });
     it('get postgres version', async() => {
       try {
         let version = await liveTable.version();
