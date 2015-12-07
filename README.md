@@ -25,16 +25,20 @@ let dbUrl = 'postgres://username:password@localhost/database';
 let liveTable = PgLiveTable({dbUrl: dbUrl);
 
 let ee = await liveTable.monitor('mytable');
-ee.on('insert', (newRow) => {
-  console.log(`got insert`);
+ee.on('insert', (payload) => {
+  console.log(`GOT insert: data: ${payload.data}`);
+})
+.on('update', (payload) => {
+  let {old_data, new_data} = payload;
+  console.log(`GOT update: old: ${old_data}, new: ${new_data}`);
+})
+.on('delete', (payload) => {
+  console.log(`GOT delete: data: ${payload.data}`);
 });
-ee.on('new', (newRow) => {
-  console.log(`got insert`);
-});
-ee.on('update', (newRow) => {
-  console.log(`got update`);
-});
+
 await liveTable.listen();
+
+//When done, don't forget to call liveTable.close()
 
 ```
 
