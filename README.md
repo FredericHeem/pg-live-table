@@ -32,7 +32,7 @@ ee.on('new', (newRow) => {
   console.log(`got insert`);
 });
 ee.on('update', (newRow) => {
-  console.log(`got insert`);
+  console.log(`got update`);
 });
 await liveTable.listen();
 
