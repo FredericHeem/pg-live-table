@@ -51,15 +51,16 @@
     "should": "^7.1.0"
   },
   "scripts": {
-    "build": "./node_modules/.bin/gulp build",
+    "build": "gulp build",
     "prebuild": "npm run lint",
-    "postInstall": "./node_modules/.bin/gulp build:production",
-    "lint": "./node_modules/.bin/eslint src",
+    "postInstall": "gulp build:production",
+    "lint": "eslint src",
     "pretest": "npm run build",
     "mocha": "npm run pretest && mocha test/*.js",
-    "test": "./node_modules/.bin/babel-node ./node_modules/.bin/isparta cover ./node_modules/.bin/_mocha test/*.js",
-    "coveralls": "./node_modules/.bin/coveralls < coverage/lcov.info",
-    "codeclimate": "./node_modules/.bin/codeclimate-test-reporter < coverage/lcov.info",
+    "test": "npm run coverage",
+    "coverage": "babel-node ./node_modules/.bin/isparta cover _mocha --report text --report html --report lcov test/*.js",
+    "coveralls": "coveralls < coverage/lcov.info",
+    "codeclimate": "nodeclimate-test-reporter < coverage/lcov.info",
     "prepublish": "npm run build",
     "version": "npm test",
     "postversion": "git push && git push --tags"

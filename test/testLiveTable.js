@@ -1,4 +1,5 @@
 import assert from 'assert';
+import should from 'should';
 import 'mochawait';
 
 var LiveTable = require('../src/');
@@ -40,6 +41,11 @@ describe('LiveTable', function() {
     it('connect', async() => {
       let liveTable = LiveTable(options);
       await liveTable.connect();
+    });
+    it('no options', () => {
+      (function(){
+        LiveTable();
+      }).should.throw();
     });
   });
   describe('insert - update - delete: ', function() {
