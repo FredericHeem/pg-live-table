@@ -1,8 +1,9 @@
+require("babel-polyfill");
 import assert from 'assert';
 import should from 'should';
 import 'mochawait';
 
-var LiveTable = require('../src/');
+import LiveTable from '../src/LiveTable';
 
 describe('LiveTable', function() {
   this.timeout(30e3);

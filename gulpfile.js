@@ -1,19 +1,18 @@
-var path = require( 'path' );
 var gulp = require( 'gulp' );
 var runSequence = require( 'run-sequence' );
-var clean = require( 'gulp-clean' );
+var del = require( 'del' );
 var babel = require('gulp-babel');
 
 var paths = {
-  scripts: ['src/**/*.js'],
+  source: ['src/**/*.js'],
   build: 'build'
 };
 
 gulp.task( 'default', [ 'build' ] );
 
 gulp.task('build', function () {
-    return gulp.src(paths.scripts)
-        .pipe(babel({ stage: 1, optional: ["runtime"] }))
+    return gulp.src(paths.source)
+        .pipe(babel())
         .pipe(gulp.dest(paths.build));
 });
 
@@ -26,6 +25,5 @@ gulp.task( 'build:production', function ( done ) {
 } );
 
 gulp.task( 'clean:build', function () {
-    return gulp.src( 'build/*', { read: false } )
-        .pipe( clean() );
+  return del([paths.build]);
 } );

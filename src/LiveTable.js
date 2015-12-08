@@ -21,9 +21,38 @@ export default function LiveTable(options = {}) {
     let client;
     let tableMap = new Map();
 
-    return {
-        query,
-        connect,
+    let liveTable = {
+        async query(command) {
+            try {
+                log.debug(`query: ${command}`);
+                let client = await getClient();
+                let params = arguments[2] === undefined ? [] : arguments[2];
+
+                return new Promise(function (resolve, reject) {
+                    client.query(command, params, function (error, result) {
+                        if (error) reject(error);
+                        else resolve(result);
+                    });
+                });
+            } catch (error) {
+                log.error(error);
+                throw error;
+            }
+        },
+        async connect() {
+            log.debug(`connecting to ${options.dbUrl}`);
+
+            return new Promise(function (resolve, reject) {
+                pg.connect(options.dbUrl, function (error, client) {
+                    if (error) {
+                        reject(error);
+                    } else {
+                        log.debug(`connected to ${options.dbUrl}`);
+                        resolve(client);
+                    }
+                });
+            });
+        },
         async listen() {
             await query(`LISTEN "${channel}"`);
             let client = await getClient();
@@ -80,24 +109,11 @@ export default function LiveTable(options = {}) {
             log.error(`channel not registered: ${channel}`);
         }
     }
-    async function connect() {
-        log.debug(`connecting to ${options.dbUrl}`);
 
-        return new Promise(function (resolve, reject) {
-            pg.connect(options.dbUrl, function (error, client) {
-                if (error) {
-                    reject(error);
-                } else {
-                    log.debug(`connected to ${options.dbUrl}`);
-                    resolve(client);
-                }
-            });
-        });
-    }
     async function getClient(){
         if(!client){
             log.debug(`getClient: creating client`);
-            client = await connect();
+            client = await liveTable.connect();
         };
         return client;
     };
@@ -169,4 +185,6 @@ export default function LiveTable(options = {}) {
 
         return true;
     };
+
+    return liveTable;
 };
