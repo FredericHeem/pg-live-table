@@ -19,6 +19,9 @@
     "reactive",
     "monitoring"
   ],
+  "bin": {
+      "pg-live-table" : "./build/LiveTableApp.js"
+  },
   "dependencies": {
     "bluebird": "^2.9.25",
     "knex": "0.9.0",
