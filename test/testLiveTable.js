@@ -63,7 +63,7 @@ describe('LiveTable', function() {
     afterEach(async () => {
       await liveTable.close();
     });
-    it.only('list all tables', async() => {
+    it('list all tables', async() => {
       try {
         let tablesNames = await liveTable.listAllTables();
         assert(tablesNames);
