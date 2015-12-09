@@ -64,7 +64,7 @@
     "test": "npm run coverage",
     "coverage": "babel-node ./node_modules/.bin/isparta cover _mocha --report text --report html --report lcov test/*.js",
     "coveralls": "coveralls < coverage/lcov.info",
-    "codeclimate": "nodeclimate-test-reporter < coverage/lcov.info",
+    "codeclimate": "climate-test-reporter < coverage/lcov.info",
     "prepublish": "npm run build",
     "version": "npm test",
     "postversion": "git push && git push --tags"
