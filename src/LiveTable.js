@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import {EventEmitter} from 'events';
 let pg = require('pg');
+import triggerTemplate from './TriggerTpl';
 
 function Table(name) {
     let ee = new EventEmitter();
@@ -18,7 +19,7 @@ export default function LiveTable(options = {}) {
     }
     let client;
     let tableMap = new Map();
-
+    let waitingPayloads = {};
     return {
         query,
         connect,
@@ -69,19 +70,69 @@ export default function LiveTable(options = {}) {
     function convertOp(op){
         return op.toLowerCase();
     }
+
+    function processNotification(payload) {
+      var argSep = [];
+
+      // Notification is 4 parts split by colons
+      while(argSep.length < 3) {
+        let lastPos = argSep.length !== 0 ? argSep[argSep.length - 1] + 1 : 0;
+        argSep.push(payload.indexOf(':', lastPos));
+      }
+
+      let msgHash   = payload.slice(0, argSep[0]);
+      let pageCount = payload.slice(argSep[0] + 1, argSep[1]);
+      let curPage   = payload.slice(argSep[1] + 1, argSep[2]);
+      let msgPart   = payload.slice(argSep[2] + 1, argSep[3]);
+      let fullMsg;
+      //log.debug(`msgHash: ${msgHash}, pageCount: ${pageCount} curPage: ${curPage} ${msgPart.length}`)
+
+      if(curPage < 1){
+          log.error("the incoming message is not well formated, check the trigger function");
+          return;
+      };
+
+      if(pageCount > 1) {
+        if(!(msgHash in waitingPayloads)) {
+          waitingPayloads[msgHash] =
+            _.range(pageCount).map(function() { return null; });
+        }
+
+        waitingPayloads[msgHash][curPage - 1] = msgPart;
+
+        if(waitingPayloads[msgHash].indexOf(null) !== -1) {
+          return null;
+        }
+
+        fullMsg = waitingPayloads[msgHash].join('');
+
+        delete waitingPayloads[msgHash];
+      }
+      else {
+        fullMsg = msgPart;
+      }
+
+      return fullMsg;
+    }
     function onNotification(info){
         if (info.channel === channel) {
             try {
-                let payload = JSON.parse(info.payload);
+                //log.debug(`notification info: ${JSON.stringify(info, null, 4)}`);
+                let payloadRaw = processNotification(info.payload);
+                //log.debug(`${payloadRaw}`);
+                if(!payloadRaw){
+                    return;
+                }
+                let payload = JSON.parse(payloadRaw);
                 let table = tableMap.get(payload.table);
                 if(table){
-                    log.debug(`notification payload: ${JSON.stringify(payload, null, 4)}`);
+                    //log.debug(`notification payload: ${JSON.stringify(payload, null, 4)}`);
                     table.ee.emit(convertOp(payload.op), payload);
                 } else {
                     log.error(`table not registered: ${payload.table}`);
                 }
             } catch (error) {
-                log.error(`${error}`);
+                log.error(`onNotification: ${error}`);
                 //TODO
                 /*
                 return this.emit('error',
@@ -115,7 +166,7 @@ export default function LiveTable(options = {}) {
     };
     async function query(command) {
         try {
-            //log.debug(`query: ${command}`);
+            log.debug(`query: ${command}`);
             let client = await getClient();
             let params = arguments[2] === undefined ? [] : arguments[2];
 
@@ -126,49 +177,17 @@ export default function LiveTable(options = {}) {
                 });
             });
         } catch (error) {
-            log.error(error);
+            log.error("query: ", error);
             throw error;
         }
     }
     async function createTableTrigger(table, channel) {
         log.debug(`createTableTrigger table: ${table} channel: ${channel}`);
         let triggerName = `${channel}_${table}`;
-
-        let payloadTpl = `
-            SELECT
-                '${table}'  AS table,
-                TG_OP       AS op,
-                json_agg($ROW$) AS data
-            INTO row_data;
-        `;
-        let payloadNew = payloadTpl.replace(/\$ROW\$/g, 'NEW')
-        let payloadOld = payloadTpl.replace(/\$ROW\$/g, 'OLD')
-        let payloadChanged = `
-            SELECT
-                '${table}'  AS table,
-                TG_OP       AS op,
-                json_agg(NEW) AS new_data,
-                json_agg(OLD) AS old_data
-            INTO row_data;
-        `
+        //log.error(triggerTemplate(triggerName, channel));
 
         await query(
-            `CREATE OR REPLACE FUNCTION ${triggerName}() RETURNS trigger AS $$
-                DECLARE
-          row_data RECORD;
-        BEGIN
-          RAISE WARNING '${triggerName}';
-          IF (TG_OP = 'INSERT') THEN
-            ${payloadNew}
-          ELSIF (TG_OP  = 'DELETE') THEN
-            ${payloadOld}
-          ELSIF (TG_OP = 'UPDATE') THEN
-            ${payloadChanged}
-          END IF;
-          PERFORM pg_notify('${channel}', row_to_json(row_data)::TEXT);
-          RETURN NULL;
-                END;
-            $$ LANGUAGE plpgsql`);
+            triggerTemplate(triggerName, channel));
 
         await query(
             `DROP TRIGGER IF EXISTS "${triggerName}"

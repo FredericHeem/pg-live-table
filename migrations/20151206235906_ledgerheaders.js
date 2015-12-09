@@ -8,7 +8,7 @@ exports.up = function(knex, Promise) {
 
         // It's null if the list is public
         table.integer("ledgerseq");
-
+        table.text('longname', 'longtext');
       })
     ]);
 };

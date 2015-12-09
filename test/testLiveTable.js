@@ -7,7 +7,7 @@ import 'mochawait';
 var LiveTable = require('../src/');
 
 describe('LiveTable', function() {
-  this.timeout(30e3);
+  this.timeout(600e3);
   let dbUrl = 'postgres://localhost/livetable_test';
   let log = require('logfilename')(__filename, {
     console: {
@@ -156,6 +156,22 @@ describe('LiveTable', function() {
         await liveTable.listen();
         await knex(tableName).insert({ledgerseq: '1'});
         await knex(tableName).update({ledgerseq: '2'}).where({id:1});
+      } catch(error){
+        console.log(`error ${error}`);
+        assert(false);
+      }
+    });
+    it('big insert', async(done) => {
+      try {
+        let ee = await liveTable.monitor(tableName);
+        ee.on('insert', () => {
+          //console.log(`GOT data:`);
+          done()
+        });
+        await liveTable.listen();
+        const MAXLENGTH = 1e6;
+        let longname = "1".repeat(MAXLENGTH);
+        await knex(tableName).insert({longname: longname, ledgerseq: '1'});
       } catch(error){
         console.log(`error ${error}`);
         assert(false);
