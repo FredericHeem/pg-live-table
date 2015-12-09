@@ -1,7 +1,5 @@
-import {
-    EventEmitter
-}
-from 'events';
+import _ from 'lodash';
+import {EventEmitter} from 'events';
 let pg = require('pg');
 
 function Table(name) {
@@ -24,6 +22,20 @@ export default function LiveTable(options = {}) {
     return {
         query,
         connect,
+        async listAllTables(){
+            let listAllTables = `
+                SELECT c.relname As tablename
+                FROM pg_catalog.pg_class c
+                     LEFT JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
+                WHERE c.relkind IN ('r')
+                      AND n.nspname <> 'pg_catalog'
+                      AND n.nspname <> 'information_schema'
+                      AND n.nspname !~ '^pg_toast'
+                  AND pg_catalog.pg_table_is_visible(c.oid);`;
+            let result = await query(listAllTables);
+            log.debug(`listAllTables: ${JSON.stringify(result)}`);
+            return _.map(result.rows, row => row.tablename);
+        },
         async listen() {
             await query(`LISTEN "${channel}"`);
             let client = await getClient();
@@ -103,7 +115,7 @@ export default function LiveTable(options = {}) {
     };
     async function query(command) {
         try {
-            log.debug(`query: ${command}`);
+            //log.debug(`query: ${command}`);
             let client = await getClient();
             let params = arguments[2] === undefined ? [] : arguments[2];
 

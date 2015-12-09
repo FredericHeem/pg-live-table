@@ -1,6 +1,8 @@
+import _ from 'lodash';
 import assert from 'assert';
 import should from 'should';
 import 'mochawait';
+
 
 var LiveTable = require('../src/');
 
@@ -60,6 +62,17 @@ describe('LiveTable', function() {
 
     afterEach(async () => {
       await liveTable.close();
+    });
+    it.only('list all tables', async() => {
+      try {
+        let tablesNames = await liveTable.listAllTables();
+        assert(tablesNames);
+        assert(tablesNames.length > 0);
+        _.each(tablesNames, tableName => console.log(tableName));
+      } catch(error){
+
+        assert(false);
+      }
     });
     it('monitor the same table twice', async() => {
       try {
