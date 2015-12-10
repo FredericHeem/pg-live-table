@@ -62,6 +62,7 @@ export default function LiveTable(options = {}) {
             for(let table of tableMap.values()) {
                 table.ee.removeAllListeners();
             };
+            tableMap.clear();
             let client = await getClient();
             client.end();
         }
