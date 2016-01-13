@@ -167,7 +167,7 @@ export default function LiveTable(options = {}) {
     };
     async function query(command) {
         try {
-            log.debug(`query: ${command}`);
+            //log.debug(`query: ${command}`);
             let client = await getClient();
             let params = arguments[2] === undefined ? [] : arguments[2];
 
