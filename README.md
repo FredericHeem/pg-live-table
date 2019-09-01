@@ -5,7 +5,7 @@
 A javascript library to monitor in real time Postgresql database table.
 
 [![Build Status][travis-image]][travis-url]
-[![Code Climate](https://codeclimate.com/github/FredericHeem/pg-live-table/badges/gpa.svg)](https://codeclimate.com/github/FredericHeem/pg-live-table) [![Coverage Status](https://coveralls.io/repos/FredericHeem/pg-live-table/badge.svg?branch=master&service=github)](https://coveralls.io/github/FredericHeem/pg-live-table?branch=master) [![NPM version][npm-image]][npm-url]
+[![Code Climate](https://codeclimate.com/github/FredericHeem/pg-live-table/badges/gpa.svg)](https://codeclimate.com/github/FredericHeem/pg-live-table) [![Coverage Status](https://coveralls.io/repos/FredericHeem/pg-live-table/badge.svg?branch=master&service=github)](https://coveralls.io/github/FredericHeem/pg-live-table?branch=master) [![Greenkeeper badge](https://badges.greenkeeper.io/FredericHeem/pg-live-table.svg)](https://greenkeeper.io/) [![NPM version][npm-image]][npm-url]
 
 [![Dependency Status][daviddm-image]][daviddm-url]
 
